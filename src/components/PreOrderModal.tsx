@@ -78,7 +78,7 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({ supply, onClose, o
         {/* Header - Fixed & Pinned */}
         <div className="bg-emerald-800 text-white p-4 sm:p-5 flex items-start justify-between shrink-0">
           <div>
-            <span className="text-emerald-200 text-xs font-semibold tracking-wide uppercase">
+            <span className="text-emerald-200 text-xs font-semibold block">
               {language === 'mr' ? 'थेट शेतकरी खरेदी' : 'Direct Farmer Sourcing'}
             </span>
             <h2 id="preorder-modal-title" className="text-base sm:text-lg font-bold text-white break-words">
@@ -90,7 +90,7 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({ supply, onClose, o
             onClick={onClose}
             aria-label="Close pre-order modal"
             title="Close modal"
-            className="w-9 h-9 rounded-full bg-emerald-900/70 hover:bg-emerald-900 border border-emerald-600/50 flex items-center justify-center text-white hover:text-emerald-100 transition-all cursor-pointer shrink-0 shadow-xs ml-2"
+            className="w-10 h-10 rounded-full bg-emerald-900/70 hover:bg-emerald-900 border border-emerald-600/50 flex items-center justify-center text-white hover:text-emerald-100 transition-all cursor-pointer shrink-0 shadow-xs ml-2"
           >
             <X className="w-5 h-5 stroke-[2.5]" />
           </button>
@@ -143,7 +143,7 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({ supply, onClose, o
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 min-h-[42px] bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm cursor-pointer"
               >
                 {language === 'mr' ? 'पूर्ण' : 'Done'}
               </button>
@@ -161,10 +161,10 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({ supply, onClose, o
                 onClick={onClose}
                 aria-label="Close pre-order form"
                 title="Close"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors text-xs font-medium cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors text-xs font-medium cursor-pointer"
               >
                 <X className="w-4 h-4 text-stone-600" />
-                <span className="text-[11px]">{language === 'mr' ? 'बंद करा' : 'Close'}</span>
+                <span className="text-xs">{language === 'mr' ? 'बंद करा' : 'Close'}</span>
               </button>
             </div>
 
@@ -313,15 +313,15 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({ supply, onClose, o
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex items-center gap-1.5 px-4 py-2 border border-stone-300 text-stone-600 hover:bg-stone-50 hover:text-stone-900 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[42px] border border-stone-300 text-stone-700 hover:bg-stone-50 hover:text-stone-900 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer"
               >
-                <X className="w-3.5 h-3.5 text-stone-500" />
+                <X className="w-3.5 h-3.5 text-stone-600" />
                 <span>{t.cancel}</span>
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || quantity <= 0}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:bg-stone-300 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-900/20 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 min-h-[42px] bg-emerald-700 hover:bg-emerald-800 disabled:bg-stone-300 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition-all cursor-pointer"
               >
                 <ShoppingCart className="w-4 h-4" />
                 <span>{isSubmitting ? (language === 'mr' ? 'पाठवत आहे...' : 'Sending Request...') : t.confirmSendPreOrder}</span>

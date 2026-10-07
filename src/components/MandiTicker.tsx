@@ -25,12 +25,12 @@ export const MandiTicker: React.FC<MandiTickerProps> = ({ language }) => {
     <div className="bg-emerald-950 text-emerald-100 text-xs py-2 px-3 sm:px-4 border-b border-emerald-900/60 overflow-hidden">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2.5 sm:gap-4">
         {/* Child 1: Mandi Status Indicator */}
-        <div className="flex items-center gap-1.5 text-emerald-400 font-semibold tracking-wide uppercase text-[11px] shrink-0 bg-emerald-950 z-10 pr-2">
-          <span className="relative flex h-2 w-2">
+        <div className="flex items-center gap-1.5 text-emerald-300 font-semibold text-xs shrink-0 bg-emerald-950 z-10 pr-2">
+          <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <Radio className="w-3.5 h-3.5 inline" />
+          <Radio className="w-3.5 h-3.5 inline text-emerald-400" />
           <span className="hidden xs:inline">{t.apmcLiveMandi}</span>
           <span className="xs:hidden">APMC</span>
         </div>
@@ -49,8 +49,8 @@ export const MandiTicker: React.FC<MandiTickerProps> = ({ language }) => {
               <div key={idx} className="flex items-center gap-1.5 shrink-0">
                 <span className="font-medium text-stone-200">{item.crop}:</span>
                 <span className="font-mono tabular-nums text-white font-semibold">{item.price}</span>
-                <span className="flex items-center text-emerald-400 text-[11px] font-medium">
-                  <ArrowUpRight className="w-3 h-3 inline" />
+                <span className="flex items-center text-emerald-300 text-xs font-medium">
+                  <ArrowUpRight className="w-3 h-3 inline text-emerald-400" />
                   {item.change}
                 </span>
                 <span className="text-emerald-800 ml-4 font-bold" aria-hidden="true">·</span>
@@ -60,7 +60,7 @@ export const MandiTicker: React.FC<MandiTickerProps> = ({ language }) => {
         </div>
 
         {/* Child 3: Last updated timestamp */}
-        <div className="hidden lg:flex items-center gap-2 text-stone-400 text-[11px] shrink-0 font-medium bg-emerald-950 z-10 pl-2">
+        <div className="hidden lg:flex items-center gap-2 text-stone-300 text-xs shrink-0 font-medium bg-emerald-950 z-10 pl-2">
           <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
           <span>{t.updatedAgo}</span>
         </div>

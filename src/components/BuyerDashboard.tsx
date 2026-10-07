@@ -86,31 +86,31 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
       <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-emerald-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-lg shadow-stone-950/20 relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 text-emerald-400 text-xs font-semibold tracking-wider uppercase">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 text-emerald-300 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
               <span>{language === 'mr' ? 'व्यापारी थेट शेतकरी खरेदी मंच' : 'Commercial Procurement & Hospitality Direct-Link'}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-sans">
               {t.buyerHeader}
             </h1>
-            <p className="text-xs sm:text-sm text-stone-300 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs sm:text-sm text-stone-200 max-w-xl font-normal leading-relaxed">
               {t.buyerSub}
             </p>
           </div>
 
           <div className="flex items-center gap-3 bg-stone-800/80 backdrop-blur-xs border border-stone-700/60 p-3 sm:p-4 rounded-xl shrink-0">
             <div>
-              <span className="text-[11px] text-stone-400 block font-medium">{language === 'mr' ? 'उपलब्ध शेतमाल' : 'Available Volume'}</span>
+              <span className="text-xs text-stone-300 block font-medium">{language === 'mr' ? 'उपलब्ध शेतमाल' : 'Available Volume'}</span>
               <span className="text-lg font-bold font-mono text-white tabular-nums">1,450 kg</span>
-              <span className="text-[10px] text-emerald-400 block font-medium">{language === 'mr' ? '६ स्थानिक शेतांतून' : 'Across 6 Local Farms'}</span>
+              <span className="text-xs text-emerald-300 block font-medium">{language === 'mr' ? '६ स्थानिक शेतांतून' : 'Across 6 Local Farms'}</span>
             </div>
             <div className="h-8 w-px bg-stone-700" />
             <div>
-              <span className="text-[11px] text-stone-400 block font-medium">{language === 'mr' ? 'तुमच्या प्री-ऑर्डर्स' : 'Your Pre-orders'}</span>
+              <span className="text-xs text-stone-300 block font-medium">{language === 'mr' ? 'तुमच्या प्री-ऑर्डर्स' : 'Your Pre-orders'}</span>
               <span className="text-lg font-bold font-mono text-emerald-300 tabular-nums">
                 {recentOrders.length} {language === 'mr' ? 'निश्चित' : 'Confirmed'}
               </span>
-              <span className="text-[10px] text-stone-400 block">{language === 'mr' ? 'आजचे वितरण' : "Today's Dispatch"}</span>
+              <span className="text-xs text-stone-300 block">{language === 'mr' ? 'आजचे वितरण' : "Today's Dispatch"}</span>
             </div>
           </div>
         </div>
@@ -123,23 +123,30 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
         </h2>
 
         <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 sm:p-5 space-y-4">
-          {/* Main Search Input */}
+          {/* Main Search Input with Accessible Label */}
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+            <label htmlFor="produce-search-input" className="sr-only">
+              {t.searchProduce}
+            </label>
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
               <Search className="w-5 h-5" />
             </div>
             <input
-              type="text"
+              id="produce-search-input"
+              name="search"
+              type="search"
+              aria-label={t.searchProduce}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchProduce}
-              className="w-full pl-11 pr-10 py-3 bg-stone-50 border border-stone-300/80 rounded-xl text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+              className="w-full pl-11 pr-10 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm sm:text-base text-stone-900 placeholder:text-stone-500 focus:bg-white focus:outline-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-600 cursor-pointer"
+                aria-label="Clear search query"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-500 hover:text-stone-800 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -150,7 +157,7 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
             {/* Crop Category Buttons - Horizontally scrollable on mobile */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1.5 sm:pb-0 w-full min-w-0">
-              <span className="text-xs font-semibold text-stone-500 mr-1 hidden md:inline shrink-0">
+              <span className="text-xs font-semibold text-stone-600 mr-1 hidden md:inline shrink-0">
                 {language === 'mr' ? 'पीक:' : 'Crop:'}
               </span>
               {cropCategories.map((crop) => (
@@ -158,7 +165,7 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
                   key={crop.id}
                   type="button"
                   onClick={() => setSelectedCrop(crop.id)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`px-3.5 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center justify-center ${
                     selectedCrop === crop.id
                       ? 'bg-emerald-700 text-white shadow-xs'
                       : 'bg-stone-100 text-stone-700 hover:bg-stone-200 hover:text-stone-900'
@@ -171,13 +178,13 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
 
             {/* Sub-Filters: Location & Organic */}
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0 text-xs">
-              <div className="flex items-center gap-1 bg-stone-100 rounded-lg p-1 border border-stone-200">
-                <MapPin className="w-3.5 h-3.5 text-stone-500 ml-1" />
+              <div className="flex items-center gap-1 bg-stone-100 rounded-lg p-1 border border-stone-200 min-h-[36px]">
+                <MapPin className="w-3.5 h-3.5 text-stone-600 ml-1" />
                 <select
                   aria-label="Filter produce by location"
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="bg-transparent text-xs font-semibold text-stone-700 focus:outline-hidden pr-2 cursor-pointer"
+                  className="bg-transparent text-xs font-semibold text-stone-800 focus:outline-hidden pr-2 cursor-pointer"
                 >
                   {locations.map((loc) => (
                     <option key={loc.id} value={loc.id}>
@@ -190,10 +197,10 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setShowOnlyOrganic(!showOnlyOrganic)}
-                className={`px-3 py-1.5 rounded-lg border font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                className={`px-3.5 py-1.5 min-h-[36px] rounded-lg border font-semibold transition-colors cursor-pointer whitespace-nowrap inline-flex items-center justify-center ${
                   showOnlyOrganic
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold'
-                    : 'border-stone-200 bg-stone-100 text-stone-600 hover:text-stone-900'
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
+                    : 'border-stone-200 bg-stone-100 text-stone-700 hover:text-stone-900 hover:bg-stone-200/70'
                 }`}
               >
                 {t.organicOnly}
@@ -220,7 +227,7 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
             </p>
           </div>
 
-          <span className="text-xs text-stone-500">
+          <span className="text-xs text-stone-600">
             {t.sortDistance}
           </span>
         </div>
@@ -234,7 +241,7 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-200 p-5 flex flex-col justify-between gap-4 group"
+                className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-all duration-200 p-5 flex flex-col justify-between gap-4 group"
               >
                 <div className="space-y-3">
                   {/* Top Farmer & Location Line */}
@@ -244,39 +251,39 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
                         <span className="text-sm font-bold text-stone-900">
                           {item.farmerName}
                         </span>
-                        <span title="Verified Producer" className="text-emerald-700">
-                          <ShieldCheck className="w-3.5 h-3.5 fill-emerald-100" />
+                        <span title="Verified Producer" className="text-emerald-800">
+                          <ShieldCheck className="w-4 h-4 fill-emerald-100 text-emerald-700" />
                         </span>
                       </div>
-                      <p className="text-xs text-stone-500">{item.farmName}</p>
+                      <p className="text-xs text-stone-600">{item.farmName}</p>
                     </div>
 
                     <div className="text-right">
                       <span className="text-lg font-extrabold font-mono text-emerald-800 tabular-nums">
                         ₹{item.expectedPricePerKg}/kg
                       </span>
-                      <span className="text-[10px] text-stone-400 block">{t.expectedRate}</span>
+                      <span className="text-xs text-stone-600 block">{t.expectedRate}</span>
                     </div>
                   </div>
 
                   {/* Crop Headline */}
-                  <div className="p-3 bg-stone-50/90 rounded-xl border border-stone-100 space-y-1">
+                  <div className="p-3 bg-stone-50/90 rounded-xl border border-stone-200 space-y-1">
                     <div className="flex items-center justify-between">
                       <h3 className="text-base font-bold text-stone-900">
                         {displayCropName}{' '}
-                        <span className="text-stone-500 text-xs font-normal">({displayCropSub})</span>
+                        <span className="text-stone-600 text-xs font-normal">({displayCropSub})</span>
                       </h3>
-                      <span className="text-xs font-bold font-mono text-stone-800 tabular-nums">
+                      <span className="text-xs font-bold font-mono text-stone-900 tabular-nums">
                         {item.availableKg} kg {t.available}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-600 line-clamp-1">{item.variety}</p>
+                    <p className="text-xs text-stone-700 line-clamp-1">{item.variety}</p>
                   </div>
 
                   {/* Metadata: Unboxed text with subtle typographic separators */}
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500 pt-0.5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600 pt-0.5">
                     <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-stone-500 shrink-0" />
                       <span>{item.location} ({item.distanceKm} km)</span>
                     </span>
                     <span aria-hidden="true">·</span>
@@ -288,22 +295,22 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
                     {item.organicCertified && (
                       <>
                         <span aria-hidden="true">·</span>
-                        <span className="text-emerald-700 font-semibold">{language === 'mr' ? 'सेंद्रिय' : 'Organic'}</span>
+                        <span className="text-emerald-800 font-semibold">{language === 'mr' ? 'सेंद्रिय' : 'Organic'}</span>
                       </>
                     )}
                   </div>
                 </div>
 
                 {/* Bottom Action: "Send Pre-order" / "प्री-ऑर्डर पाठवा" Button */}
-                <div className="pt-2 border-t border-stone-100 flex items-center justify-between gap-3">
-                  <div className="text-[11px] text-stone-500">
-                    {language === 'mr' ? 'प्रतवारी:' : 'Grade:'} <strong className="text-stone-800">{item.grade}</strong>
+                <div className="pt-2 border-t border-stone-200 flex items-center justify-between gap-3">
+                  <div className="text-xs text-stone-600">
+                    {language === 'mr' ? 'प्रतवारी:' : 'Grade:'} <strong className="text-stone-900">{item.grade}</strong>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => onOpenPreOrder(item)}
-                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-900/15 hover:shadow-lg transition-all duration-150 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 min-h-[42px] bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer"
                   >
                     <span>{t.sendPreOrder}</span>
                     <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />

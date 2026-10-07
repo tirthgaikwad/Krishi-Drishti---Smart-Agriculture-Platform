@@ -41,7 +41,7 @@ export const DealSuccessModal: React.FC<DealSuccessModalProps> = ({ match, onClo
               <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-300" />
             </div>
             <div>
-              <span className="text-emerald-200 text-xs font-semibold tracking-wide uppercase">
+              <span className="text-emerald-200 text-xs font-semibold block">
                 {t.dealConfirmed} · Token #{dealToken}
               </span>
               <h2 id="deal-modal-title" className="text-base sm:text-lg font-bold text-white break-words">
@@ -54,7 +54,7 @@ export const DealSuccessModal: React.FC<DealSuccessModalProps> = ({ match, onClo
             onClick={onClose}
             aria-label="Close modal"
             title="Close modal"
-            className="w-9 h-9 rounded-full bg-emerald-900/70 hover:bg-emerald-900 border border-emerald-600/50 flex items-center justify-center text-white hover:text-emerald-100 transition-all cursor-pointer shrink-0 shadow-xs ml-2"
+            className="w-10 h-10 rounded-full bg-emerald-900/70 hover:bg-emerald-900 border border-emerald-600/50 flex items-center justify-center text-white hover:text-emerald-100 transition-all cursor-pointer shrink-0 shadow-xs ml-2"
           >
             <X className="w-5 h-5 stroke-[2.5]" />
           </button>
@@ -144,7 +144,7 @@ export const DealSuccessModal: React.FC<DealSuccessModalProps> = ({ match, onClo
             <button
               type="button"
               onClick={handleDownload}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 border text-xs font-semibold rounded-xl transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[42px] border text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer ${
                 isDownloaded
                   ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
                   : 'border-stone-300 text-stone-700 hover:bg-stone-50'
@@ -152,12 +152,12 @@ export const DealSuccessModal: React.FC<DealSuccessModalProps> = ({ match, onClo
             >
               {isDownloaded ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-700" />
+                  <Check className="w-4 h-4 text-emerald-800" />
                   <span>{language === 'mr' ? 'पावती डाऊनलोड झाली ✓' : 'Challan Downloaded ✓'}</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4 text-stone-500" />
+                  <Download className="w-4 h-4 text-stone-600" />
                   <span>{t.downloadChallan}</span>
                 </>
               )}
@@ -165,7 +165,7 @@ export const DealSuccessModal: React.FC<DealSuccessModalProps> = ({ match, onClo
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+              className="px-5 py-2.5 min-h-[42px] bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm cursor-pointer"
             >
               {t.doneAndReturn}
             </button>

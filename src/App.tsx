@@ -203,12 +203,12 @@ export default function App() {
             <span>— {language === 'mr' ? 'थेट शेतकरी-खरेदीदार बाजार' : 'Smart Agriculture Direct Market'}</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-stone-600">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-stone-600">
             <span>{language === 'mr' ? 'संगमनेर APMC केंद्र' : 'Sangamner APMC Hub'}</span>
             <span aria-hidden="true">·</span>
             <span>{language === 'mr' ? 'शेतकरी मदत क्रमांक: १८००-१८०-१५५१' : 'Farmer Helpline: 1800-180-1551'}</span>
             <span aria-hidden="true">·</span>
-            <span className="text-emerald-700 font-semibold">{language === 'mr' ? 'शून्य दलाली' : 'Zero Middleman Commission'}</span>
+            <span className="text-emerald-800 font-semibold">{language === 'mr' ? 'शून्य दलाली' : 'Zero Middleman Commission'}</span>
           </div>
         </div>
       </footer>
