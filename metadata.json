@@ -1,0 +1,6 @@
+{
+  "name": "Krishi Drishti - Smart Agriculture Platform",
+  "description": "Smart agriculture dashboard connecting farmers and local buyers with real-time market insights, mandi price trends, and instant pre-orders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

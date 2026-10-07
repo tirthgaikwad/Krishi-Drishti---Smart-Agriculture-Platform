@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@keyframes linear-ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-linear-ticker {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: linear-ticker 28s linear infinite;
+}
+
+.animate-linear-ticker:hover {
+  animation-play-state: paused;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
