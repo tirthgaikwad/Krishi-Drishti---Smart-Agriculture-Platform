@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MarketInsight, BuyerMatch } from '../types/agriculture';
 import { Language, translations } from '../data/translations';
+import { useOrderContext } from '../context/OrderContext';
 import {
   Sparkles,
   ArrowUpRight,
@@ -8,7 +9,15 @@ import {
   MapPin,
   Clock,
   Check,
-  Activity
+  Activity,
+  Bell,
+  X,
+  CheckCircle2,
+  Phone,
+  ShoppingBag,
+  Truck,
+  Store,
+  Package
 } from 'lucide-react';
 
 interface FarmerDashboardProps {
@@ -20,6 +29,8 @@ interface FarmerDashboardProps {
   onAcceptRequest: (match: BuyerMatch) => void;
   isLoadingInsights?: boolean;
   language?: Language;
+  onSwitchToBuyer?: () => void;
+  onToast?: (msg: string) => void;
 }
 
 export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
@@ -29,9 +40,30 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
   buyerMatches,
   onAcceptRequest,
   language = 'en',
+  onSwitchToBuyer,
+  onToast,
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'nearby' | 'highest'>('all');
   const t = translations[language];
+
+  // Shared state holding incoming pre-orders from Kunal Deshmukh / Buyer Dashboard
+  const { pendingOrders, acceptPreOrder, rejectPreOrder } = useOrderContext();
+
+  const handleAcceptOrder = (orderId: string) => {
+    acceptPreOrder(orderId);
+    const toastText = language === 'mr'
+      ? 'ऑर्डर स्वीकारली - टोकन #KD-8821 तयार झाले'
+      : 'Order Accepted - Token #KD-8821 Generated';
+    if (onToast) onToast(toastText);
+  };
+
+  const handleRejectOrder = (orderId: string) => {
+    rejectPreOrder(orderId);
+    const toastText = language === 'mr'
+      ? 'ऑर्डर मागणी नाकारली गेली'
+      : 'Order request declined';
+    if (onToast) onToast(toastText);
+  };
 
   // Filter matches
   const filteredMatches = buyerMatches.filter((match) => {
@@ -47,6 +79,18 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
     { id: 'pomegranate', name: 'Pomegranate (डाळिंब)', short: language === 'mr' ? 'डाळिंब' : 'Bhagwa' },
   ];
 
+  // Only show active unaccepted/unrejected pending pre-orders in this section
+  const pendingOrdersList = pendingOrders.filter((o) => o.status === 'pending');
+  const activePreOrdersCount = pendingOrdersList.length;
+
+  // Confirmed/Accepted orders
+  const acceptedOrdersList = pendingOrders.filter((o) => o.status === 'accepted');
+  const acceptedOrdersCount = acceptedOrdersList.length;
+
+  const totalInquiriesCount =
+    buyerMatches.filter((m) => m.status === 'pending').length +
+    activePreOrdersCount;
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
       {/* 1. Personalized Welcome Header */}
@@ -61,13 +105,32 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 text-emerald-200 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-              <span>{language === 'mr' ? 'पाटील सेंद्रिय शेत · संगमनेर APMC परिक्षेत्र' : 'Patil Organic Farm · Sangamner APMC Zone'}</span>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-2 text-emerald-200 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+                <span>{language === 'mr' ? 'पाटील सेंद्रिय शेत · संगमनेर APMC परिक्षेत्र' : 'Patil Organic Farm · Sangamner APMC Zone'}</span>
+              </div>
+
+              {/* Farmer Active Orders Icon & Dynamic Red Notification Badge */}
+              <div
+                className="relative inline-flex items-center justify-center p-1.5 rounded-lg bg-emerald-950/70 border border-emerald-600/60 text-emerald-100 hover:text-white transition-colors ml-1"
+                title={`${acceptedOrdersCount} ${language === 'mr' ? 'निश्चित केलेल्या ऑर्डर्स' : 'Active Confirmed Orders'}`}
+                aria-label={`Active Orders: ${acceptedOrdersCount}`}
+              >
+                <Package className="w-4 h-4 text-emerald-300" />
+                {acceptedOrdersCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-emerald-950 shadow-xs animate-bounce">
+                    {acceptedOrdersCount}
+                  </span>
+                )}
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-sans">
-              {t.goodMorningRamesh}
-            </h1>
+
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-sans">
+                {t.goodMorningRamesh}
+              </h1>
+            </div>
             <p className="text-xs sm:text-sm text-emerald-100 max-w-xl font-normal leading-relaxed">
               {t.farmerSubtitle}
             </p>
@@ -84,13 +147,327 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
             <div>
               <span className="text-xs text-emerald-200 block font-medium">{t.activeInquiries}</span>
               <span className="text-lg font-bold font-mono text-white tabular-nums">
-                {buyerMatches.filter((m) => m.status === 'pending').length} {language === 'mr' ? 'व्यापारी' : 'buyers'}
+                {totalInquiriesCount} {language === 'mr' ? 'मागण्या' : 'inquiries'}
               </span>
-              <span className="text-xs text-emerald-300 block font-medium">{language === 'mr' ? 'उत्तम मागणी' : 'High Match'}</span>
+              <span className="text-xs text-emerald-300 block font-medium">
+                {activePreOrdersCount > 0 ? (language === 'mr' ? 'नवीन ऑर्डर्स!' : 'New Orders!') : (language === 'mr' ? 'उत्तम मागणी' : 'High Match')}
+              </span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 2. PROMINENT SECTION: "🔔 Pending Pre-Orders" (Real-time shared state from Kunal Deshmukh - Strictly rendered only when there are pending orders) */}
+      {pendingOrdersList.length > 0 && (
+        <section aria-labelledby="pending-preorders-heading" className="space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-3">
+            <div className="flex items-center gap-2.5">
+              <h2 id="pending-preorders-heading" className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
+                <span>{t.pendingPreOrders}</span>
+              </h2>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-amber-500" aria-hidden="true" />
+                {pendingOrdersList.length} {language === 'mr' ? 'नवीन मागणी' : 'New Order'}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">
+              {t.pendingPreOrdersSub}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {pendingOrdersList.map((order) => {
+              const isAccepted = order.status === 'accepted';
+
+              return (
+                <div
+                  key={order.id}
+                  className={`rounded-2xl border p-5 flex flex-col justify-between gap-4 transition-all duration-200 shadow-sm ${
+                    isAccepted
+                      ? 'bg-emerald-50/50 border-emerald-400'
+                      : 'bg-white border-amber-300 shadow-md ring-2 ring-amber-300/40'
+                  }`}
+                >
+                  {/* Top: Buyer profile & status badge */}
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+                          KD
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base sm:text-lg font-bold text-stone-900">
+                              {order.buyerName}
+                            </h3>
+                            <span
+                              title="Verified Agritech Buyer"
+                              className="inline-flex items-center text-emerald-800 text-xs font-medium"
+                            >
+                              <ShieldCheck className="w-4 h-4 fill-emerald-100 text-emerald-700" />
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-stone-600">
+                            <span className="font-medium text-emerald-800">{order.buyerType}</span>
+                            <span aria-hidden="true">·</span>
+                            <span>{order.createdAt}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status Indicator Badge */}
+                      <div>
+                        {isAccepted ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>{t.orderStatusAccepted}</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
+                            <Clock className="w-3.5 h-3.5 text-amber-700" />
+                            <span>{t.orderStatusPending}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Order Details Panel */}
+                    <div className="mt-3.5 p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-2.5">
+                      <div className="flex items-center justify-between text-xs font-semibold text-stone-900">
+                        <span className="text-emerald-950">
+                          {language === 'mr' ? 'मागणी:' : 'Produce:'}{' '}
+                          <strong className="font-mono tabular-nums text-sm font-bold text-stone-900">
+                            {order.quantityKg} kg
+                          </strong>{' '}
+                          {language === 'mr' ? order.cropHindi : order.cropName}
+                        </span>
+                        <div className="text-right">
+                          <span className="text-xs text-stone-600 block">{language === 'mr' ? 'अंतिम रक्कम' : 'Final Price'}</span>
+                          <span className="font-mono tabular-nums text-base sm:text-lg font-extrabold text-emerald-800">
+                            ₹{order.totalAmount.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Fulfillment Method Highlight Card */}
+                      <div className="p-2.5 rounded-lg bg-white border border-stone-200 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="text-stone-500 font-medium">{language === 'mr' ? 'वितरण:' : 'Fulfillment:'}</span>
+                          <span className={`inline-flex items-center gap-1.5 font-bold px-2 py-0.5 rounded-md text-xs ${
+                            order.deliveryPreference === 'Farmer Delivery'
+                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                              : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                          }`}>
+                            {order.deliveryPreference === 'Farmer Delivery' ? (
+                              <>
+                                <Truck className="w-3.5 h-3.5 text-amber-700" />
+                                <span>{language === 'mr' ? 'शेतकरी वितरण (किचन ड्रॉप)' : 'Farmer Delivery'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Store className="w-3.5 h-3.5 text-emerald-700" />
+                                <span>{language === 'mr' ? 'शेत बांधावर उचल (फार्मगेट)' : 'Farmgate Pickup'}</span>
+                              </>
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="text-right">
+                          {order.deliveryPreference === 'Farmer Delivery' ? (
+                            <span className="font-mono text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                              {language === 'mr' ? '+₹४५ वाहतूक' : '+₹45 Delivery'}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                              {language === 'mr' ? 'मोफत (₹०)' : 'Free (₹0)'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs text-stone-600 pt-1.5 border-t border-stone-200">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          <span>{order.location} ({language === 'mr' ? 'संगमनेर परिक्षेत्र' : 'APMC Zone'})</span>
+                        </div>
+                        <div className="flex items-center gap-1 font-medium text-stone-800 justify-end">
+                          <Clock className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          <span>{order.pickupDate || 'Tomorrow, 8 AM'}</span>
+                        </div>
+                      </div>
+
+                      {order.notes && (
+                        <p className="text-[11px] text-stone-600 italic bg-white p-2 rounded-lg border border-stone-100">
+                          &ldquo;{order.notes}&rdquo;
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Accept / Reject Buttons or Accepted Resolution State */}
+                  {isAccepted ? (
+                    <div className="flex items-center justify-between pt-2 border-t border-emerald-200">
+                      <div className="flex items-center gap-1.5 text-xs text-emerald-800 font-bold">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                        <span>Token {order.orderToken} Confirmed</span>
+                      </div>
+                      <a
+                        href={`tel:${order.buyerContact.replace(/\s+/g, '')}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>{t.callBuyer} ({order.buyerContact})</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+                      <span className="text-xs font-mono font-semibold text-stone-600">
+                        Token {order.orderToken}
+                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => handleRejectOrder(order.id)}
+                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[40px] border border-rose-300 text-rose-700 hover:bg-rose-50 hover:text-rose-800 active:scale-[0.98] text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer"
+                        >
+                          <X className="w-4 h-4 stroke-[2.5]" />
+                          <span>{t.reject}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAcceptOrder(order.id)}
+                          className="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[40px] bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        >
+                          <Check className="w-4 h-4 stroke-[2.5]" />
+                          <span>{t.accept}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* 2. CONFIRMED DELIVERIES SECTION: "✅ Confirmed Deliveries" (Conditionally rendered when acceptedOrdersList.length > 0) */}
+      {acceptedOrdersList.length > 0 && (
+        <section aria-labelledby="confirmed-deliveries-heading" className="space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200 pb-3">
+            <div className="flex items-center gap-2.5">
+              <h2 id="confirmed-deliveries-heading" className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
+                <span>{t.confirmedDeliveries}</span>
+              </h2>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold">
+                <CheckCircle2 className="w-3 h-3 text-emerald-700" />
+                {acceptedOrdersList.length} {language === 'mr' ? 'निश्चित' : 'Confirmed'}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">
+              {t.confirmedDeliveriesSub}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {acceptedOrdersList.map((order) => {
+              const isFarmerDelivery = order.deliveryPreference === 'Farmer Delivery' || order.fulfillmentMethod === 'Farmer Delivery';
+              const displayCrop = language === 'mr' ? order.cropHindi : order.cropName;
+              const displayFulfillment = isFarmerDelivery
+                ? (language === 'mr' ? 'शेतकरी वितरण' : 'Farmer Delivery')
+                : (language === 'mr' ? 'शेत बांधावर उचल' : 'Farmgate Pickup');
+
+              return (
+                <div
+                  key={order.id}
+                  className="rounded-2xl border border-emerald-300 bg-white shadow-sm hover:shadow-md transition-all duration-200 p-5 flex flex-col justify-between gap-4 ring-1 ring-emerald-400/30"
+                >
+                  {/* Top: Buyer profile & status tag */}
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+                          KD
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base sm:text-lg font-bold text-stone-900">
+                              {order.buyerName}
+                            </h3>
+                            <span
+                              title="Verified Agritech Buyer"
+                              className="inline-flex items-center text-emerald-800 text-xs font-medium"
+                            >
+                              <ShieldCheck className="w-4 h-4 fill-emerald-100 text-emerald-700" />
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-stone-600">
+                            <span className="font-medium text-emerald-800">{order.buyerType}</span>
+                            <span aria-hidden="true">·</span>
+                            <span className="font-mono font-medium text-stone-600">Token {order.orderToken}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status Tag: Awaiting Fulfillment */}
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-300 shadow-xs shrink-0">
+                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+                        <span>{t.awaitingFulfillment}</span>
+                      </span>
+                    </div>
+
+                    {/* Summary line as requested: "Kunal Deshmukh • 25kg Tomato • ₹670 • Farmer Delivery" */}
+                    <div className="mt-3.5 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 space-y-2">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-950 flex-wrap">
+                        <span>{order.buyerName}</span>
+                        <span className="text-emerald-400" aria-hidden="true">•</span>
+                        <span>{order.quantityKg}kg {displayCrop}</span>
+                        <span className="text-emerald-400" aria-hidden="true">•</span>
+                        <span className="font-mono text-emerald-900">₹{order.totalAmount}</span>
+                        <span className="text-emerald-400" aria-hidden="true">•</span>
+                        <span className="text-emerald-800 inline-flex items-center gap-1">
+                          {isFarmerDelivery ? (
+                            <Truck className="w-3.5 h-3.5 text-emerald-700" />
+                          ) : (
+                            <Store className="w-3.5 h-3.5 text-emerald-700" />
+                          )}
+                          {displayFulfillment}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-stone-600 pt-1 border-t border-emerald-200/60">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-stone-500" />
+                          {order.location}
+                        </span>
+                        <span className="flex items-center gap-1 font-medium text-stone-700">
+                          <Clock className="w-3.5 h-3.5 text-stone-500" />
+                          {order.pickupDate || 'Tomorrow, 8:00 AM'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom: Contact Buyer action instead of accept/reject */}
+                  <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+                    <div className="flex items-center gap-1.5 text-xs text-stone-600">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>{language === 'mr' ? 'ऑर्डर स्वीकारली' : 'Order Accepted'}</span>
+                    </div>
+                    <a
+                      href={`tel:${order.buyerContact.replace(/\s+/g, '')}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{t.callBuyer} ({order.buyerContact})</span>
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* 2. PROMINENT "Market Insights" Card */}
       <section aria-labelledby="market-insights-heading" className="space-y-3">
@@ -123,8 +500,8 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
           </div>
         </div>
 
-        {/* Featured Market Insight Card */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 shadow-md hover:shadow-lg transition-shadow p-4 sm:p-7 relative overflow-hidden w-full">
+        {/* Featured Market Insight Card with Dark Mode JSON Code Block */}
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 shadow-md hover:shadow-lg transition-shadow p-4 sm:p-7 relative overflow-hidden w-full space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-center">
             {/* Left Column: 3 Core Requirements (Trend, Demand, Expected Price) */}
             <div className="md:col-span-7 space-y-4 sm:space-y-5">

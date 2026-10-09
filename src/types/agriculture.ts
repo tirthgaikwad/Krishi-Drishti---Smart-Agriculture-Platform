@@ -54,13 +54,18 @@ export interface SupplyListing {
   imageUrl?: string;
 }
 
+export type FulfillmentMethod = 'Farmgate Pickup' | 'Farmer Delivery';
+
 export interface PreOrderPayload {
   supplyId: string;
   buyerName: string;
   buyerContact: string;
   quantityKg: number;
   offeredPricePerKg: number;
-  deliveryPreference: 'pickup' | 'delivery';
+  deliveryPreference: 'pickup' | 'delivery' | FulfillmentMethod;
+  fulfillmentMethod?: FulfillmentMethod;
+  deliveryFee?: number;
+  totalAmount?: number;
   pickupDate: string;
   notes?: string;
 }
@@ -70,8 +75,34 @@ export interface PreOrderConfirmation {
   supply: SupplyListing;
   quantityKg: number;
   totalAmount: number;
+  deliveryFee?: number;
+  fulfillmentMethod?: FulfillmentMethod;
   pickupDate: string;
-  deliveryPreference: 'pickup' | 'delivery';
+  deliveryPreference: 'pickup' | 'delivery' | FulfillmentMethod;
   status: 'Confirmed' | 'Pending Confirmation';
   createdAt: string;
+}
+
+export interface PendingPreOrder {
+  id: string;
+  orderToken: string; // e.g. '#KD-8821'
+  buyerName: string; // 'Kunal Deshmukh'
+  buyerType: string; // 'Verified Buyer'
+  buyerContact: string; // '+91 98220 44101'
+  farmerName: string; // 'Ramesh Patil'
+  cropName: string; // 'Tomato'
+  cropHindi: string; // 'टोमॅटो'
+  quantityKg: number;
+  offeredPricePerKg: number;
+  totalAmount: number;
+  produceSubtotal?: number;
+  deliveryFee?: number;
+  location: string;
+  deliveryPreference: 'Farmgate Pickup' | 'Farmer Delivery' | 'pickup' | 'delivery' | string;
+  fulfillmentMethod?: FulfillmentMethod;
+  pickupDate: string;
+  notes?: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: string;
+  supplyId: string;
 }

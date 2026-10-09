@@ -13,11 +13,15 @@ import { PreOrderModal } from './components/PreOrderModal';
 import { mockAgricultureApi } from './data/mockApi';
 import { MarketInsight, BuyerMatch, SupplyListing, PreOrderPayload, PreOrderConfirmation } from './types/agriculture';
 import { Language } from './data/translations';
+import { OrderProvider, useOrderContext } from './context/OrderContext';
 import { CheckCircle2, Sprout } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState<'farmer' | 'buyer'>('farmer');
   const [language, setLanguage] = useState<Language>('en');
+
+  // Shared in-memory orders
+  const { pendingOrders, sendPreOrder } = useOrderContext();
 
   // Market Insights State
   const [selectedCropId, setSelectedCropId] = useState<string>('tomato');
@@ -36,6 +40,28 @@ export default function App() {
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Automatically scroll to the top of the page / content container whenever user switches tabs
+  const handleViewChange = (view: 'farmer' | 'buyer') => {
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) {
+      contentArea.scrollTop = 0;
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) {
+      contentArea.scrollTop = 0;
+    }
+  }, [currentView]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -82,7 +108,6 @@ export default function App() {
     try {
       const result = await mockAgricultureApi.acceptBuyerRequest(match.id);
       if (result.success) {
-        // Update local state
         setBuyerMatches((prev) =>
           prev.map((m) => (m.id === match.id ? { ...m, status: 'accepted' } : m))
         );
@@ -100,6 +125,16 @@ export default function App() {
   // Handle Submit Pre-Order in Buyer Dashboard
   const handleSendPreOrder = async (payload: PreOrderPayload): Promise<PreOrderConfirmation> => {
     const confirmation = await mockAgricultureApi.sendPreOrder(payload);
+    // Also dispatch to shared in-memory order context if not already added
+    if (activePreOrderSupply) {
+      sendPreOrder(
+        activePreOrderSupply,
+        payload.quantityKg,
+        (payload.fulfillmentMethod || 'Farmgate Pickup'),
+        payload.totalAmount,
+        payload.deliveryFee
+      );
+    }
     // Refresh supplies and recent orders
     const updatedSupplies = await mockAgricultureApi.getLocalSupply();
     setSupplies(updatedSupplies);
@@ -111,7 +146,8 @@ export default function App() {
     return confirmation;
   };
 
-  const pendingRequestsCount = buyerMatches.filter((m) => m.status === 'pending').length;
+  // Pending count combines active in-memory pre-orders from Kunal Deshmukh
+  const pendingRequestsCount = pendingOrders.filter((o) => o.status === 'pending').length;
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans selection:bg-emerald-200 selection:text-emerald-950">
@@ -123,7 +159,7 @@ export default function App() {
       {/* Top Navigation Bar with View Switcher & Language Toggle */}
       <Navbar
         currentView={currentView}
-        onViewChange={(view) => setCurrentView(view)}
+        onViewChange={handleViewChange}
         pendingRequestsCount={pendingRequestsCount}
         language={language}
         onLanguageChange={setLanguage}
@@ -138,7 +174,7 @@ export default function App() {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 overflow-x-hidden">
+      <main className="content-area flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 overflow-x-hidden">
         {isLoading && !currentInsight ? (
           <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
             <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
@@ -158,6 +194,8 @@ export default function App() {
                   buyerMatches={buyerMatches}
                   onAcceptRequest={handleAcceptRequest}
                   language={language}
+                  onSwitchToBuyer={() => handleViewChange('buyer')}
+                  onToast={showToast}
                 />
               )
             ) : (
@@ -166,6 +204,7 @@ export default function App() {
                 onOpenPreOrder={(supply) => setActivePreOrderSupply(supply)}
                 recentOrders={recentOrders}
                 language={language}
+                onToast={showToast}
               />
             )}
           </div>
@@ -193,7 +232,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white/80 py-6 px-4 sm:px-8 text-xs text-stone-500">
+      <footer className="border-t border-stone-200 bg-white/80 py-6 px-4 sm:px-8 text-xs text-stone-600">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
@@ -215,3 +254,12 @@ export default function App() {
     </div>
   );
 }
+
+export default function App() {
+  return (
+    <OrderProvider>
+      <AppContent />
+    </OrderProvider>
+  );
+}
+
