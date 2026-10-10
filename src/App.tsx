@@ -10,6 +10,7 @@ import { FarmerDashboard } from './components/FarmerDashboard';
 import { BuyerDashboard } from './components/BuyerDashboard';
 import { DealSuccessModal } from './components/DealSuccessModal';
 import { PreOrderModal } from './components/PreOrderModal';
+import { AddProduceModal } from './components/AddProduceModal';
 import { mockAgricultureApi } from './data/mockApi';
 import { MarketInsight, BuyerMatch, SupplyListing, PreOrderPayload, PreOrderConfirmation } from './types/agriculture';
 import { Language } from './data/translations';
@@ -37,6 +38,7 @@ function AppContent() {
   // Modals state
   const [activeDealMatch, setActiveDealMatch] = useState<BuyerMatch | null>(null);
   const [activePreOrderSupply, setActivePreOrderSupply] = useState<SupplyListing | null>(null);
+  const [isAddProduceOpen, setIsAddProduceOpen] = useState<boolean>(false);
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -146,6 +148,21 @@ function AppContent() {
     return confirmation;
   };
 
+  // Handle Farmer Add Harvest / Produce listing
+  const handleAddProduce = async (newProduceData: Omit<SupplyListing, 'id'>) => {
+    try {
+      const createdItem = await mockAgricultureApi.addProduceListing(newProduceData);
+      // Immediately update local supply state array so Buyer Dashboard updates in real time
+      setSupplies((prev) => [createdItem, ...prev]);
+      const toastText = language === 'mr'
+        ? 'नवीन शेतमाल यशस्वीरीत्या जोडला गेला!'
+        : 'New produce listed successfully!';
+      showToast(toastText);
+    } catch (err) {
+      console.error('Error adding produce listing:', err);
+    }
+  };
+
   // Pending count combines active in-memory pre-orders from Kunal Deshmukh
   const pendingRequestsCount = pendingOrders.filter((o) => o.status === 'pending').length;
 
@@ -196,6 +213,7 @@ function AppContent() {
                   language={language}
                   onSwitchToBuyer={() => handleViewChange('buyer')}
                   onToast={showToast}
+                  onOpenAddProduce={() => setIsAddProduceOpen(true)}
                 />
               )
             ) : (
@@ -230,6 +248,14 @@ function AppContent() {
           language={language}
         />
       )}
+
+      {/* Add Harvest / List Produce Modal */}
+      <AddProduceModal
+        isOpen={isAddProduceOpen}
+        onClose={() => setIsAddProduceOpen(false)}
+        onAddProduce={handleAddProduce}
+        language={language}
+      />
 
       {/* Footer */}
       <footer className="border-t border-stone-200 bg-white/80 py-6 px-4 sm:px-8 text-xs text-stone-600">

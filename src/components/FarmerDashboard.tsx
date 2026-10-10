@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   Truck,
   Store,
-  Package
+  Package,
+  PlusCircle
 } from 'lucide-react';
 
 interface FarmerDashboardProps {
@@ -31,6 +32,7 @@ interface FarmerDashboardProps {
   language?: Language;
   onSwitchToBuyer?: () => void;
   onToast?: (msg: string) => void;
+  onOpenAddProduce?: () => void;
 }
 
 export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
@@ -42,6 +44,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
   language = 'en',
   onSwitchToBuyer,
   onToast,
+  onOpenAddProduce,
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'nearby' | 'highest'>('all');
   const t = translations[language];
@@ -136,23 +139,38 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
             </p>
           </div>
 
-          {/* Quick Farm Quick-Stat Badges */}
-          <div className="flex items-center gap-3 bg-emerald-950/60 backdrop-blur-xs border border-emerald-700/50 p-3 sm:p-4 rounded-xl shrink-0">
-            <div>
-              <span className="text-xs text-emerald-200 block font-medium">{t.readyProduce}</span>
-              <span className="text-lg font-bold font-mono text-white tabular-nums">150 kg</span>
-              <span className="text-xs text-emerald-300 block">{language === 'mr' ? 'अ-दर्जा हायब्रिड' : 'A-Grade Hybrid'}</span>
+          {/* Quick Farm Quick-Stat Badges & List New Produce Action */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Quick-Stat Badges */}
+            <div className="flex items-center gap-3 bg-emerald-950/60 backdrop-blur-xs border border-emerald-700/50 p-3 sm:p-4 rounded-xl shrink-0">
+              <div>
+                <span className="text-xs text-emerald-200 block font-medium">{t.readyProduce}</span>
+                <span className="text-lg font-bold font-mono text-white tabular-nums">150 kg</span>
+                <span className="text-xs text-emerald-300 block">{language === 'mr' ? 'अ-दर्जा हायब्रिड' : 'A-Grade Hybrid'}</span>
+              </div>
+              <div className="h-8 w-px bg-emerald-800" />
+              <div>
+                <span className="text-xs text-emerald-200 block font-medium">{t.activeInquiries}</span>
+                <span className="text-lg font-bold font-mono text-white tabular-nums">
+                  {totalInquiriesCount} {language === 'mr' ? 'मागण्या' : 'inquiries'}
+                </span>
+                <span className="text-xs text-emerald-300 block font-medium">
+                  {activePreOrdersCount > 0 ? (language === 'mr' ? 'नवीन ऑर्डर्स!' : 'New Orders!') : (language === 'mr' ? 'उत्तम मागणी' : 'High Match')}
+                </span>
+              </div>
             </div>
-            <div className="h-8 w-px bg-emerald-800" />
-            <div>
-              <span className="text-xs text-emerald-200 block font-medium">{t.activeInquiries}</span>
-              <span className="text-lg font-bold font-mono text-white tabular-nums">
-                {totalInquiriesCount} {language === 'mr' ? 'मागण्या' : 'inquiries'}
-              </span>
-              <span className="text-xs text-emerald-300 block font-medium">
-                {activePreOrdersCount > 0 ? (language === 'mr' ? 'नवीन ऑर्डर्स!' : 'New Orders!') : (language === 'mr' ? 'उत्तम मागणी' : 'High Match')}
-              </span>
-            </div>
+
+            {/* Prominent List New Produce Button */}
+            {onOpenAddProduce && (
+              <button
+                type="button"
+                onClick={onOpenAddProduce}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-stone-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-950/30 transition-all cursor-pointer border border-emerald-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <PlusCircle className="w-4 h-4 text-emerald-950" />
+                <span>{t.listNewProduce}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -166,8 +166,14 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({
           <div className="flex items-center gap-3 bg-stone-800/80 backdrop-blur-xs border border-stone-700/60 p-3 sm:p-4 rounded-xl shrink-0">
             <div>
               <span className="text-xs text-stone-300 block font-medium">{language === 'mr' ? 'उपलब्ध शेतमाल' : 'Available Volume'}</span>
-              <span className="text-lg font-bold font-mono text-white tabular-nums">1,450 kg</span>
-              <span className="text-xs text-emerald-300 block font-medium">{language === 'mr' ? '६ स्थानिक शेतांतून' : 'Across 6 Local Farms'}</span>
+              <span className="text-lg font-bold font-mono text-white tabular-nums">
+                {supplies.reduce((acc, s) => acc + s.availableKg, 0).toLocaleString('en-IN')} kg
+              </span>
+              <span className="text-xs text-emerald-300 block font-medium">
+                {language === 'mr'
+                  ? `${new Set(supplies.map((s) => s.farmerName)).size} स्थानिक शेतांतून`
+                  : `Across ${new Set(supplies.map((s) => s.farmerName)).size} Local Farms`}
+              </span>
             </div>
             <div className="h-8 w-px bg-stone-700" />
             <div>

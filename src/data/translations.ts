@@ -80,6 +80,14 @@ export const translations = {
     confirmedDeliveriesSub: 'Pre-orders accepted and scheduled for dispatch or farmgate pickup',
     awaitingFulfillment: 'Awaiting Fulfillment',
     activeOrdersBadge: 'Active Orders',
+    // Inventory Management / Add Produce
+    listNewProduce: '➕ List New Produce',
+    listNewProduceSub: 'List your newly harvested crop lot directly to local buyers across Sangamner',
+    cropNameLabel: 'Crop Name',
+    quantityAvailableLabel: 'Quantity Available (in kg)',
+    basePriceLabel: 'Base Price (in ₹/kg)',
+    publishListing: 'Publish Listing',
+    produceAddedToast: 'New produce listed successfully!',
   },
   mr: {
     farmerDashboard: 'शेतकरी डॅशबोर्ड',
@@ -160,5 +168,13 @@ export const translations = {
     confirmedDeliveriesSub: 'स्वीकारलेल्या आणि वितरणासाठी अथवा बांधावर उचलण्यासाठी सज्ज ऑर्डर्स',
     awaitingFulfillment: 'वितरण प्रलंबित',
     activeOrdersBadge: 'सक्रिय ऑर्डर्स',
+    // Inventory Management / Add Produce
+    listNewProduce: '➕ नवीन शेतमाल जोडा',
+    listNewProduceSub: 'स्थानिक खरेदीदारांसाठी तुमचा ताजा शेतमाल थेट विक्रीसाठी जोडा',
+    cropNameLabel: 'पिकाचे नाव',
+    quantityAvailableLabel: 'उपलब्ध प्रमाण (kg मध्ये)',
+    basePriceLabel: 'मूळ दर (₹/kg मध्ये)',
+    publishListing: 'सूचीबद्ध करा',
+    produceAddedToast: 'नवीन शेतमाल यशस्वीरीत्या जोडला गेला!',
   },
 };

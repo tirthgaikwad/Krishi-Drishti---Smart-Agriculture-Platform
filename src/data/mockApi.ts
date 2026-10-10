@@ -361,6 +361,17 @@ export const mockAgricultureApi = {
     return results;
   },
 
+  // Add new farmer supply / produce listing
+  async addProduceListing(data: Omit<SupplyListing, 'id'>): Promise<SupplyListing> {
+    await new Promise((res) => setTimeout(res, 150));
+    const newSupply: SupplyListing = {
+      ...data,
+      id: `sup-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    };
+    currentSupply = [newSupply, ...currentSupply];
+    return newSupply;
+  },
+
   // Submit a buyer pre-order
   async sendPreOrder(payload: PreOrderPayload): Promise<PreOrderConfirmation> {
     await new Promise((res) => setTimeout(res, 350));
